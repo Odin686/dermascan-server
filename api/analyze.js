@@ -1,4 +1,4 @@
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   // CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -12,7 +12,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  // Simple app token verification (prevents random abuse)
+  // Simple app token verification
   const appToken = req.headers['x-app-token'];
   if (appToken !== process.env.APP_SECRET_TOKEN) {
     return res.status(401).json({ error: 'Unauthorized' });
@@ -108,15 +108,12 @@ Be accurate and evidence-based. If the image is not a skin lesion, indicate that
     }
 
     const geminiData = await geminiResponse.json();
-
-    // Extract text from Gemini response
     const analysisText = geminiData.candidates?.[0]?.content?.parts?.[0]?.text;
 
     if (!analysisText) {
       return res.status(502).json({ error: 'No analysis returned from AI' });
     }
 
-    // Parse and validate the JSON
     const analysis = JSON.parse(analysisText);
 
     return res.status(200).json({
@@ -128,4 +125,4 @@ Be accurate and evidence-based. If the image is not a skin lesion, indicate that
     console.error('Server error:', error);
     return res.status(500).json({ error: 'Internal server error' });
   }
-}
+};
